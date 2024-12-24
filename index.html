@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chaguagua Atrapa Galletas</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Fondo de página con imagen de fondo completa */
+        body {
+            background: url('background.png') no-repeat center center fixed;
+            background-size: cover;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            color: #333;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .game-container {
+            position: relative;
+            width: 100%;
+            height: 700px;
+            margin: 0 auto;
+            background-image: url('fondo_tierra.png');
+            background-size: cover;
+            overflow: hidden;
+        }
+
+        .mole {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            background-size: cover;
+            cursor: pointer;
+            animation: jump 1.5s ease-in-out infinite;
+        }
+
+        @keyframes jump {
+            0% { transform: translateY(100%); }
+            50% { transform: translateY(0); }
+            100% { transform: translateY(100%); }
+        }
+
+        .chaguagua {
+            width: 120px;
+            height: 120px;
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background-image: url('chaguagua.png');
+            background-size: cover;
+        }
+
+        .timer {
+            font-size: 1.5em;
+            color: #f76c6c;
+            margin-top: 20px;
+        }
+
+        .back-button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 1em;
+            color: #fff;
+            background-color: #4caf50;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>¡Chaguagua Atrapa Croquetas!</h1>
+    <div class="timer" id="timer">Tiempo: 0 segundos | Puntuación: 0</div>
+    <div class="game-container" id="gameContainer">
+        <div class="chaguagua" id="chaguagua"></div>
+    </div>
+
+    <a href="file:///C:/Users/ROSALINDAE/Desktop/JUEGOS5.HTML" class="back-button">Regresar al inicio</a>
+
+    <script>
+        let timer = 0;
+        let interval;
+        let chaguaguaSize = 120;
+        let score = 0;
+
+        function setRandomChaguaguaImage() {
+            const chaguaguaElement = document.getElementById('chaguagua');
+            const images = ['chaguagua.png', 'chaguagua1.png'];
+            const randomImage = images[Math.floor(Math.random() * images.length)];
+            chaguaguaElement.style.backgroundImage = `url('${randomImage}')`;
+        }
+
+        function startTimer() {
+            interval = setInterval(() => {
+                timer++;
+                document.getElementById('timer').textContent = `Tiempo: ${timer} segundos | Puntuación: ${score}`;
+            }, 1000);
+        }
+
+        function startGame() {
+            const gameContainer = document.getElementById('gameContainer');
+            const numMoles = 32; // Ahora son 32 galletas
+
+            for (let i = 0; i < numMoles; i++) {
+                const mole = document.createElement('div');
+                mole.classList.add('mole');
+                
+                // Selecciona aleatoriamente entre croquetas.png y cookies2.png
+                const moleImages = ['croquetas.png', 'cookies2.png'];
+                const randomImage = moleImages[Math.floor(Math.random() * moleImages.length)];
+                mole.style.backgroundImage = `url('${randomImage}')`;
+
+                // Asignar posiciones aleatorias considerando todo el ancho y alto de la ventana
+                mole.style.top = `${Math.random() * (window.innerHeight - 80)}px`;
+                mole.style.left = `${Math.random() * (window.innerWidth - 80)}px`;
+                mole.style.animationDuration = `${Math.random() * 1.5 + 1}s`;
+                gameContainer.appendChild(mole);
+            }
+
+            startTimer();
+            checkCollision();
+        }
+
+        function checkCollision() {
+            const chaguagua = document.getElementById('chaguagua');
+            const moles = document.querySelectorAll('.mole');
+
+            setInterval(() => {
+                moles.forEach(mole => {
+                    const chaguaguaRect = chaguagua.getBoundingClientRect();
+                    const moleRect = mole.getBoundingClientRect();
+
+                    if (
+                        chaguaguaRect.left < moleRect.right &&
+                        chaguaguaRect.right > moleRect.left &&
+                        chaguaguaRect.top < moleRect.bottom &&
+                        chaguaguaRect.bottom > moleRect.top
+                    ) {
+                        mole.style.display = 'none';
+                        chaguaguaSize += 20;
+                        chaguagua.style.width = `${chaguaguaSize}px`;
+                        chaguagua.style.height = `${chaguaguaSize}px`;
+
+                        score += 2;
+
+                        document.getElementById('timer').textContent = `Tiempo: ${timer} segundos | Puntuación: ${score}`;
+
+                        const remainingMoles = Array.from(document.querySelectorAll('.mole')).filter(mole => mole.style.display !== 'none');
+                        if (remainingMoles.length === 0) {
+                            clearInterval(interval);
+                            alert(`¡Ganaste! Tiempo total: ${timer} segundos | Puntuación final: ${score}`);
+                        }
+                    }
+                });
+            }, 100);
+        }
+
+        const chaguagua = document.getElementById('chaguagua');
+        let chaguaguaPos = { x: 10, y: 10 };
+
+        function moveChaguagua(event) {
+            const step = 10;
+            switch(event.key) {
+                case 'ArrowUp':
+                    if (chaguaguaPos.y > 0) chaguaguaPos.y -= step;
+                    break;
+                case 'ArrowDown':
+                    if (chaguaguaPos.y < window.innerHeight - chaguagua.offsetHeight) chaguaguaPos.y += step;
+                    break;
+                case 'ArrowLeft':
+                    if (chaguaguaPos.x > 0) chaguaguaPos.x -= step;
+                    break;
+                case 'ArrowRight':
+                    if (chaguaguaPos.x < window.innerWidth - chaguagua.offsetWidth) chaguaguaPos.x += step;
+                    break;
+            }
+            chaguagua.style.top = `${chaguaguaPos.y}px`;
+            chaguagua.style.left = `${chaguaguaPos.x}px`;
+        }
+
+        window.addEventListener('keydown', moveChaguagua);
+        window.onload = () => {
+            setRandomChaguaguaImage();
+            startGame();
+        };
+    </script>
+</body>
+</html>

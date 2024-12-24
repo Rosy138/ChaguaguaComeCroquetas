@@ -1,0 +1,113 @@
+/* Estilo básico de la página */
+body {
+    background-color: #f0f8ff; /* Color pastel suave */
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+    color: #333;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+}
+
+.title-link {
+    color: #2015; /* Color especificado para el enlace */
+    text-decoration: none;
+}
+
+.title-link:hover {
+    text-decoration: underline;
+}
+
+.container {
+    max-width: 600px;
+    margin: auto;
+    padding: 20px;
+}
+
+h1 {
+    color: #ff8c94;
+    font-size: 2.5em;
+    margin-bottom: 10px;
+}
+
+/* Estilo y animación de Chaguagua */
+.chaguagua-container {
+    position: relative;
+    display: inline-block;
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateX(-20px);
+    }
+    50% {
+        transform: translateX(20px);
+    }
+}
+
+img {
+    width: 200px;
+    max-width: 60%;
+}
+
+/* Estilos del formulario */
+.input-container {
+    margin-top: 20px;
+}
+
+label {
+    font-size: 1.2em;
+    color: #7f8c8d;
+}
+
+input[type="text"] {
+    padding: 10px;
+    font-size: 1em;
+    border: 2px solid #ffb6c1;
+    border-radius: 5px;
+    width: 80%;
+    max-width: 300px;
+    margin-top: 10px;
+}
+
+button {
+    background-color: #ffb6c1;
+    color: white;
+    padding: 10px 20px;
+    font-size: 1em;
+    border: none;
+    border-radius: 5px;
+    margin-top: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+
+
+button:hover {
+    background-color: #ff8c94;
+}
+
+/* Estilo del mensaje de respuesta */
+#response {
+    margin-top: 20px;
+    font-size: 1.5em;
+    color: #3498db;
+}
+
+.home-button {
+    display: inline-block;
+    padding: 10px 20px;
+    margin-top: 20px;
+    background-color: #006633; /* Verde bandera */
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.home-button:hover {
+    background-color: #004d26; /* Un tono más oscuro al pasar el ratón */
+}
+
