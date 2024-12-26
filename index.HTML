@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chaguagua Atrapa Galletas</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            background: url('background.png') no-repeat center center fixed;
+            background-size: cover;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            color: #333;
+            font-size: 3em;
+            margin: 20px 0;
+            text-shadow: 2px 2px 5px #ccc;
+        }
+
+        .instructions {
+            background-color: #fff;
+            color: #444;
+            font-size: 1.5em;
+            margin: 10px auto 20px;
+            padding: 15px;
+            width: 90%;
+            max-width: 600px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .game-container {
+            position: relative;
+            width: 95%;
+            height: 80vh;
+            margin: 0 auto;
+            background-image: url('fondo_tierra.png');
+            background-size: cover;
+            overflow: hidden;
+            border: 3px solid #ccc;
+            border-radius: 15px;
+        }
+
+        .mole {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            background-size: cover;
+            cursor: pointer;
+            animation: jump 1.5s ease-in-out infinite;
+        }
+
+        @keyframes jump {
+            0% { transform: translateY(100%); }
+            50% { transform: translateY(0); }
+            100% { transform: translateY(100%); }
+        }
+
+        .chaguagua {
+            width: 120px;
+            height: 120px;
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background-image: url('chaguagua.png');
+            background-size: cover;
+        }
+
+        .timer {
+            font-size: 1.8em;
+            color: #f76c6c;
+            margin: 10px 0;
+            text-shadow: 1px 1px 3px #fff;
+        }
+
+        .button-container {
+            margin-top: 20px;
+        }
+
+        .action-button {
+            display: inline-block;
+            margin: 10px;
+            padding: 15px 30px;
+            font-size: 1.3em;
+            color: #fff;
+            background-color: #4caf50;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            border-radius: 10px;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .action-button:hover {
+            background-color: #45a049;
+            transform: scale(1.1);
+        }
+
+        .action-button.restart {
+            background-color: #f44336;
+        }
+
+        .action-button.restart:hover {
+            background-color: #d32f2f;
+        }
+    </style>
+</head>
+<body>
+    <h1>¡Chaguagua Atrapa Croquetas!</h1>
+    <p class="instructions">Dale galletas a Chaguagua moviéndolo con las flechas de dirección. <strong>¡Atrapa todas las galletas antes de que se acaben!</strong></p>
+    <div class="timer" id="timer">Tiempo: 0 segundos | Puntuación: 0</div>
+    <div class="game-container" id="gameContainer"></div>
+
+    <div class="button-container">
+        <button class="action-button" onclick="startGame()">Iniciar</button>
+        <button class="action-button restart" onclick="restartGame()">Reiniciar</button>
+    </div>
+
+    <script>
+        let timer = 0;
+        let interval;
+        let chaguaguaSize = 120;
+        let score = 0;
+
+        function setRandomChaguaguaImage() {
+            const chaguaguaElement = document.createElement('div');
+            chaguaguaElement.id = 'chaguagua';
+            chaguaguaElement.className = 'chaguagua';
+            const images = ['chaguagua.png', 'chaguagua1.png'];
+            const randomImage = images[Math.floor(Math.random() * images.length)];
+            chaguaguaElement.style.backgroundImage = `url('${randomImage}')`;
+            document.getElementById('gameContainer').appendChild(chaguaguaElement);
+        }
+
+        function startTimer() {
+            clearInterval(interval);
+            timer = 0;
+            interval = setInterval(() => {
+                timer++;
+                document.getElementById('timer').textContent = `Tiempo: ${timer} segundos | Puntuación: ${score}`;
+            }, 1000);
+        }
+
+        function startGame() {
+            document.getElementById('gameContainer').innerHTML = '';
+            score = 0;
+            chaguaguaSize = 120;
+            startTimer();
+            setRandomChaguaguaImage();
+
+            const gameContainer = document.getElementById('gameContainer');
+            const numMoles = 32;
+
+            for (let i = 0; i < numMoles; i++) {
+                const mole = document.createElement('div');
+                mole.classList.add('mole');
+                const moleImages = ['croquetas.png', 'cookies2.png'];
+                const randomImage = moleImages[Math.floor(Math.random() * moleImages.length)];
+                mole.style.backgroundImage = `url('${randomImage}')`;
+                mole.style.top = `${Math.random() * (gameContainer.offsetHeight - 80)}px`;
+                mole.style.left = `${Math.random() * (gameContainer.offsetWidth - 80)}px`;
+                gameContainer.appendChild(mole);
+            }
+            checkCollision();
+        }
+
+        function checkCollision() {
+            const chaguagua = document.getElementById('chaguagua');
+            const moles = document.querySelectorAll('.mole');
+
+            setInterval(() => {
+                moles.forEach(mole => {
+                    const chaguaguaRect = chaguagua.getBoundingClientRect();
+                    const moleRect = mole.getBoundingClientRect();
+
+                    if (
+                        chaguaguaRect.left < moleRect.right &&
+                        chaguaguaRect.right > moleRect.left &&
+                        chaguaguaRect.top < moleRect.bottom &&
+                        chaguaguaRect.bottom > moleRect.top
+                    ) {
+                        mole.style.display = 'none';
+                        chaguaguaSize += 20;
+                        chaguagua.style.width = `${chaguaguaSize}px`;
+                        chaguagua.style.height = `${chaguaguaSize}px`;
+
+                        score += 2;
+
+                        document.getElementById('timer').textContent = `Tiempo: ${timer} segundos | Puntuación: ${score}`;
+
+                        const remainingMoles = Array.from(document.querySelectorAll('.mole')).filter(mole => mole.style.display !== 'none');
+                        if (remainingMoles.length === 0) {
+                            clearInterval(interval);
+                            alert(`¡Ganaste! Tiempo total: ${timer} segundos | Puntuación final: ${score}`);
+                        }
+                    }
+                });
+            }, 100);
+        }
+
+        function restartGame() {
+            clearInterval(interval);
+            startGame();
+        }
+
+        window.addEventListener('keydown', event => {
+            const chaguagua = document.getElementById('chaguagua');
+            if (!chaguagua) return;
+
+            const step = 30;
+            const chaguaguaPos = chaguagua.getBoundingClientRect();
+            const container = document.getElementById('gameContainer').getBoundingClientRect();
+
+            switch (event.key) {
+                case 'ArrowUp':
+                    if (chaguaguaPos.top > container.top) chaguagua.style.top = `${chaguagua.offsetTop - step}px`;
+                    break;
+                case 'ArrowDown':
+                    if (chaguaguaPos.bottom < container.bottom) chaguagua.style.top = `${chaguagua.offsetTop + step}px`;
+                    break;
+                case 'ArrowLeft':
+                    if (chaguaguaPos.left > container.left) chaguagua.style.left = `${chaguagua.offsetLeft - step}px`;
+                    break;
+                case 'ArrowRight':
+                    if (chaguaguaPos.right < container.right) chaguagua.style.left = `${chaguagua.offsetLeft + step}px`;
+                    break;
+            }
+        });
+    </script>
+</body>
+</html>
+
+
